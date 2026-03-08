@@ -9,7 +9,7 @@ def iso_timestamp():
 def load_sensor_specs():
     specs = {}
     with open ("docs/sensor_specs.csv", newline = '') as f:
-        reader = csv.DictReader
+        reader = csv.DictReader(f)
         for row in reader:
             specs[row["sensor_name"]] = {
                 "type": row["data_type"],
@@ -22,10 +22,11 @@ def generate_sensors(specs):
     sensors = {}
     for sensor, spec in specs.items():
         value = random.uniform(spec["min"], spec["max"])
-        if spec["value"] == "int":
+        if spec["type"] == "int":
             value = int(value)
         else:
             value = round(value, 2)
+        sensor[sensor] = value
     return sensors
 
 def generate_payload(specs):
@@ -42,7 +43,7 @@ def generate_payload(specs):
     }
     return payload
     
-if __name__ == "__syn_data__":
+if __name__ == "__main__":
     specs = load_sensor_specs("docs/sensor_specs.csv")
     payload = generate_payload(specs)
     print(json.dumps(payload, indent = 2))
