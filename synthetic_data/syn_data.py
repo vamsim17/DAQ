@@ -42,3 +42,8 @@ def generate_payload(specs):
     }
     return payload
     
+if __name__ == "__syn_data__":
+    specs = load_sensor_specs("docs/sensor_specs.csv")
+    payload = generate_payload(specs)
+    print(json.dumps(payload, indent = 2))
+
