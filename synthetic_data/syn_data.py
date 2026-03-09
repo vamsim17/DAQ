@@ -12,18 +12,34 @@ def load_sensor_specs(csv_path: str = "docs/sensor_specs.csv") -> dict:
     with open (csv_path, newline = '') as f:
         for row in csv.DictReader(f):
             dtype = row["data_type"].strip()
-            min = int(row["min_range"]) if dtype == "integer" else float(row["min_range"])
-            max = int(row["max_range"]) if dtype == "integer" else float(row["max_range"])
-            specs[row["sensor_name"].strip()] = (min, max, dtype)
+            low = int(row["min_range"]) if dtype == "integer" else float(row["min_range"])
+            high = int(row["max_range"]) if dtype == "integer" else float(row["max_range"])
+            specs[row["sensor_name"].strip()] = (low, high, dtype)
     return specs
     
 def random_sensor_val(sensor_name: str, specs: dict) -> float| int:
-    min, max, dtype = specs[sensor_name]
+    low, high, dtype = specs[sensor_name]
     if dtype == "integer":
-        return random.randint(int(min), int(max))
+        return random.randint(int(low), int(high))
     else:
-        return round(random.uniform(min, max), 2)
+        return round(random.uniform(low, high), 2)
 
+def build_sensors_section(specs: dict) -> dict:
+    speed_keys = [k for k in specs if k.startswith("speed_")]
+    min_speed = min(specs[k][0] for k in speed_keys)
+    max_speed = max(specs[k][0] for k in speed_keys)
+    base_speed = round(random.uniform(min_speed, max_speed), 2)
+
+    sensors = {}
+    for name in specs:
+        if name.startswith("speed_"):
+            low, high, _ = specs[name]
+            val = round(max(low, min(high, base_speed + random.uniform(-0.3, 0.3))), 2)
+            sensors[name] = random_sensor_val(name, specs)
+    return sensors
+
+def generate_packed_id(ts_ms: int) -> str:
+    return f"pkt_{ts_ms}"
 
     
 if __name__ == "__main__":
