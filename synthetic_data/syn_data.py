@@ -1,50 +1,33 @@
 import json
 import random
 import csv
-from datetime import datetime, timezone
+import os
+from datetime import datetime, timedelta
 
-def iso_timestamp():
-    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+#def iso_timestamp():
+#    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
-def load_sensor_specs():
+def load_sensor_specs(csv_path: str = "docs/sensor_specs.csv") -> dict:
     specs = {}
-    with open ("docs/sensor_specs.csv", newline = '') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            specs[row["sensor_name"]] = {
-                "type": row["data_type"],
-                "min": float(row["min_range"]),
-                "max": float(row["max_range"])
-            }
+    with open (csv_path, newline = '') as f:
+        for row in csv.DictReader(f):
+            dtype = row["data_type"].strip()
+            min = int(row["min_range"]) if dtype == "integer" else float(row["min_range"])
+            max = int(row["max_range"]) if dtype == "integer" else float(row["max_range"])
+            specs[row["sensor_name"].strip()] = (min, max, dtype)
     return specs
     
-def generate_sensors(specs):
-    sensors = {}
-    for sensor, spec in specs.items():
-        value = random.uniform(spec["min"], spec["max"])
-        if spec["type"] == "int":
-            value = int(value)
-        else:
-            value = round(value, 2)
-        sensor[sensor] = value
-    return sensors
+def random_sensor_val(sensor_name: str, specs: dict) -> float| int:
+    min, max, dtype = specs[sensor_name]
+    if dtype == "integer":
+        return random.randint(int(min), int(max))
+    else:
+        return round(random.uniform(min, max), 2)
 
-def generate_payload(specs):
-    payload = {
-        "timestamp": iso_timestamp(),
-        "session_id": "auto_" + datetime.now().strftime("%Y%m%d_%H%M%S"),
-        "vehicle_id": "FSAE_2022_001",
-        "sensors": generate_sensors(specs),
-        "telemetry_metadata": {
-            "packet_id": f"pkt_{int(datetime.now().timestamp()*1000)}",
-            "sample_rate_hz": 100,
-            "daq_version": "v2.2.1"
-        }
-    }
-    return payload
+
     
 if __name__ == "__main__":
-    specs = load_sensor_specs("docs/sensor_specs.csv")
+    specs = load_sensor_specs()
     payload = generate_payload(specs)
     print(json.dumps(payload, indent = 2))
 
