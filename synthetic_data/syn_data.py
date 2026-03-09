@@ -41,7 +41,24 @@ def build_sensors_section(specs: dict) -> dict:
 def generate_packed_id(ts_ms: int) -> str:
     return f"pkt_{ts_ms}"
 
-    
+def generate_session_id(dt: datetime) -> str:
+    session_start = dt.replace(second = 0, microsecond = 0)
+    return f"auto_{session_start.strftime('%Y%m%d_%H%M%S')}"
+
+def build_record(dt: datetime, vehicle_id: str, specs: dict, session_id: str | None = None) -> dict:
+    ts_ms = int(dt.timestamp() * 1000)
+    record = {
+        "timestamp": dt.strftime("%Y-%m-%dT%H:%M:%S.") + f"{dt.microsecond // 1000:03d}Z",
+        "session_id": session_id if session_id else generate_session_id(dt),
+        "vehicle_id": vehicle_id,
+        "sensors": build_sensors_section(specs),
+        "telemetry_metadata": {
+            "packet_id": generate_packed_id(ts_ms),
+            "sample_rate_hz": 100
+        }
+    }
+    return record
+
 if __name__ == "__main__":
     specs = load_sensor_specs()
     payload = generate_payload(specs)
