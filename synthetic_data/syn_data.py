@@ -84,7 +84,7 @@ def generate(
         with open(filepath, "w") as f:
             json.dump(record, f, indent=2)
         written.append(filepath)
-    print(f"Generated {count} records {output_dir}/")
+    print(f"Generated {count} data trials in {output_dir}/")
     return written
 
 if __name__ == "__main__":
