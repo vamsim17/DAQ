@@ -71,6 +71,8 @@ def generate(
     os.makedirs(output_dir, exist_ok = True)
     specs = load_sensor_specs(specs_path)
 
+    if start_dt is None:
+        start_dt = datetime.now()
     written = []
     for i in range(count):
         dt = start_dt + timedelta(milliseconds=i * interval_ms)
