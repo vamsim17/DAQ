@@ -33,7 +33,7 @@ def build_sensors_section(specs):
     sensors = {}
     for name in specs:
         if name.startswith("speed_"):
-            low, high = specs[name]
+            low, high, _ = specs[name]
             val = round(max(low, min(high, base_speed + random.uniform(-0.3, 0.3))), 2)
             sensors[name] = val
         else:
