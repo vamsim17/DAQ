@@ -36,6 +36,8 @@ def build_sensors_section(specs):
             low, high, _ = specs[name]
             val = round(max(low, min(high, base_speed + random.uniform(-0.3, 0.3))), 2)
             sensors[name] = random_sensor_val(name, specs)
+        else:
+            sensors[name] = random_sensor_val(name, specs)
     return sensors
 
 def generate_packed_id(ts_ms):
@@ -78,7 +80,7 @@ def generate(
         dt = start_dt + timedelta(milliseconds=i * interval_ms)
         record = build_record(dt, vehicle_id, specs, session_id)
 
-        filename = dt.strftime("%Y%m%d_%H%M%S") + f"_{dt.microsecond // 1000:03d}.json"
+        filename = dt.strftime("%Y%m%d_%H%M%S") + ".json"
         filepath = os.path.join(output_dir, filename)
 
         with open(filepath, "w") as f:
