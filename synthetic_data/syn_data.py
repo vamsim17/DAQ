@@ -90,7 +90,7 @@ def generate(
 if __name__ == "__main__":
     generate(
         count = 10,
-        output_dir="synthetic_out",
+        output_dir="synthetic_data_output",
         vehicle_id = "FSAE_2022_001",
         specs_path = "docs/sensor_specs.csv"
     )
