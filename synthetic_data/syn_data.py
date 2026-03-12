@@ -27,7 +27,7 @@ def random_sensor_val(sensor_name, specs):
 def build_sensors_section(specs):
     speed_keys = [k for k in specs if k.startswith("speed_")]
     min_speed = min(specs[k][0] for k in speed_keys)
-    max_speed = max(specs[k][0] for k in speed_keys)
+    max_speed = max(specs[k][1] for k in speed_keys)
     base_speed = round(random.uniform(min_speed, max_speed), 2)
 
     sensors = {}
